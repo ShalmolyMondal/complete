@@ -1,8 +1,4 @@
-import React from 'react';
-import './style.css';
-
-export default function App() {
-  const handleRulesInput = (e) => {
+const handleRulesInput = (e) => {
     e.persist();
     const file = e.target.files[0];
     if (file.type === 'text/plain') {
@@ -16,22 +12,23 @@ export default function App() {
               .split(/\r\n|\n/)
               .filter((line) => line !== '');
 
-            lines
+           const arrane = lines
               .map((line) => line.slice(line.indexOf('If')))
-              .forEach((line) => {
+              .map((line) => {
                 const match = line.match(/(?:\S+\s)?\S*is\S*(?:\s\S+)?/g);
-                console.log(match);
-
-                const arr = [];
+              const arr = [];
                 match.forEach((text) => {
                   const splitText = text.split(' ');
                   arr.push({
                     [splitText[0]]: splitText[2].replaceAll("'", ''),
                   });
                 });
-                console.log(arr);
+                console.log(arr)
+                return arr
                 // console.log(arr.reduce((acc,item) => ({...acc,...item},{})))
-              });
+              }).flat(1)
+console.log(arrane)
+
 
             // console.log(lines.join('\n'));
           }
@@ -41,11 +38,3 @@ export default function App() {
       }
     }
   };
-  return (
-    <div>
-      <h1>Hello StackBlitz!</h1>
-      <p>Start editing to see some magic happen :)</p>
-      <input type="file" onChange={handleRulesInput} />
-    </div>
-  );
-}
