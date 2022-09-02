@@ -1,0 +1,21 @@
+{
+  "name": "iot-data-simulator-situations",
+  "version": "1.0.0",
+  "description": "[![Join the chat at https://gitter.im/IoT-data-simulator/Lobby](https://badges.gitter.im/IoT-data-simulator/Lobby.svg)](https://gitter.im/IoT-data-simulator/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose pull && docker-compose build && docker-compose up",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mitul1719/iot-data-simulator-situations.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mitul1719/iot-data-simulator-situations/issues"
+  },
+  "homepage": "https://github.com/mitul1719/iot-data-simulator-situations#readme"
+}
