@@ -124,12 +124,15 @@ export default function RunSituationSimulation(props) {
     // Connection opened
     socket.addEventListener('open', function (event) {
       intervalID = setInterval(() => {
-        socket.send(JSON.stringify(props.situationList.filter((item) => item._id === context)));
+        console.log(props.situationList);
+        socket.send(JSON.stringify(props.situationList) /*.filter((item) => item._id === context))*/);
       }, Number(sense) * 1000);
     });
     socket.onmessage = function (event) {
-      console.log(event);
-      writeIntoConsole(event.data + step);
+      const { data } = event;
+      console.log(JSON.parse(data.replaceAll("'", '"')));
+      // JSON.parse(data.replaceAll("'", '"'));
+      // writeIntoConsole(data + step);
       // socket.close();
       if (k === Number(records)) {
         clearInterval(intervalID);
@@ -149,6 +152,7 @@ export default function RunSituationSimulation(props) {
     }
     if (step === 3) {
       setRunning(false);
+      // setStep(0);
     }
   }, [step, props.transitions]);
 

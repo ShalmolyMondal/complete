@@ -258,6 +258,7 @@ class AddEditSituationModal extends React.Component {
       context_attributes: [{ ...DEFAULT_VALUES.CONTEXT_ATTRIBUTE }],
       openStepTwo: false,
       fuzzy_selection: {},
+      fuzzy_rules: [],
       showSummary: false,
       showMsg: undefined,
       situationConclusion: '',
@@ -389,6 +390,7 @@ class AddEditSituationModal extends React.Component {
       // situation_description: this.state.situation_description,
       context_attributes: this.state.context_attributes,
       fuzzy_selection: this.state.fuzzy_selection,
+      fuzzy_rules: this.state.fuzzy_rules,
     };
     if (this.props.mode == 'EDIT_MODE') {
       this.props.viewStore.updateSituation(this.props.situationId, { situationData: situationPayload }, this.handleClose);
@@ -473,28 +475,34 @@ class AddEditSituationModal extends React.Component {
     e.persist();
     const file = e.target.files[0];
     if (file.type === 'text/plain') {
-      const reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = (e) => {
-        const content = e.target.result;
-        if (content.length > 0) {
-          const lines = content.split(/\r\n|\n/).filter((line) => line !== '');
-          /**
-           * Check for correct tnorms and t co-norms
-           */
-          cogoToast.success('done');
+      try {
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = (e) => {
+          const content = e.target.result;
+          if (content.length > 0) {
+            const lines = content.split(/\r\n|\n/).filter((line) => line !== '');
 
-          // const regexMatch = new RegExp(`if (${Object.keys(this.state.fuzzy_selection).join(|)}) `,'gi')
-          console.log(Object.keys(this.state.fuzzy_selection));
-          console.log(this.state.fuzzy_selection);
-          // const isCorrectRule = lines.every(line=>{
+            const arrange = lines
+              .map((line) => line.slice(line.indexOf('If')))
+              .map((line) => {
+                const match = line.match(/(?:\S+\s)?\S*is\S*(?:\s\S+)?/g);
+                return match.reduce((acc, item) => {
+                  const splitText = item.split(' ');
 
-          // })
-          console.log(lines);
-          // console.log(lines.join('\n'));
-        } else {
-        }
-      };
+                  return {
+                    ...acc,
+                    [splitText[0]]: splitText[2].replaceAll("'", ''),
+                  };
+                }, []);
+              })
+              .flat(1);
+            this.setState({ fuzzy_rules: arrange });
+          }
+        };
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 

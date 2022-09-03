@@ -12,7 +12,7 @@ const CONTEXT_ATTRIBUTE = {
   context_attribute_name: '',
   context_attribute_description: '',
   unit: '',
-  data_values: [{ ...DATA_VALUE }],
+  // data_values: [{ ...DATA_VALUE }],
 };
 
 const TRANSITION_DATA = {

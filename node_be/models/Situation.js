@@ -22,7 +22,11 @@ const SituationSchema = mongoose.Schema({
     type: Object,
     required: false,
   },
-  context_attributes: [ContextAttributesSchema],
+  fuzzy_rules: {
+    type: Array,
+    required: false,
+  },
+  // context_attributes: [ContextAttributesSchema],
 });
 
 module.exports = mongoose.model("Situations", SituationSchema);
