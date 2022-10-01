@@ -16,9 +16,9 @@ export default function RunSituationSimulation(props) {
   const [step, setStep] = useState(0);
   const [sense, setSense] = useState(1);
   const [records, setRecords] = useState(5);
+  const [generatedData, setGeneratedData] = useState([]);
 
   const closeConfigurationPanel = (saved) => {
-    console.log(saved);
     if (saved) {
       setRunning(false);
       setCompleted(false);
@@ -76,74 +76,48 @@ export default function RunSituationSimulation(props) {
     });
   };
   const runSimulation = () => {
-    // writeIntoConsole('Running Simulation...', 1, '');
-    // writeIntoConsole('Loading transitions configuraiton....', 1, '');
-    // props.transitions.map((transition, index) => {
-    //   getSituationData(transition.from);
-    //   getSituationData(transition.to);
-    //   const timer = setTimeout(
-    //     () => {
-    //       writeIntoConsole('Running situation: ' + getSituaitonName(transition.from), transition.from, getSituaitonName(transition.from));
-    //       modifyElement(transition.from, 'active');
-    //       writeIntoConsole('Time based:' + transition.time + ' seconds.', transition.from, getSituaitonName(transition.from));
-    //     },
-    //     1500,
-    //     () => clearTimeout(timer)
-    //   );
-
-    //   const timeInterval = setTimeout(
-    //     () => {
-    //       writeIntoConsole('Transition to situation:' + getSituaitonName(transition.to), transition.to, getSituaitonName(transition.to));
-    //       modifyElement(transition.from, 'completed');
-    //       const timer = setTimeout(
-    //         () => {
-    //           writeIntoConsole('Situation Completed:' + getSituaitonName(transition.to), transition.to, getSituaitonName(transition.to));
-    //           modifyElement(transition.to, 'completed');
-    //           if (props.transitions.length == index + 1) {
-    //             setRunning(false);
-    //             setCompleted(true);
-    //           }
-    //         },
-    //         1500,
-    //         () => clearTimeout(timer)
-    //       );
-    //     },
-    //     transition.timeBased ? transition.time * 1000 : 3000
-    //   );
-    //   return () => clearTimeout(timeInterval);
-    // });
-    /**new URL('./worker.js', import.meta.url) */
-
-    // const myWorker = new WorkerBuilder(worker);
-    // console.log(myWorker);
-
     const context = props.transitions.map((item) => [item.from, item.intermediate, item.to]).flat(1)[step];
     const socket = new WebSocket('ws://localhost:8000/websocket');
     let k = 1;
     let intervalID;
     // Connection opened
     socket.addEventListener('open', function (event) {
+      const lat_long = JSON.parse(localStorage.getItem('weatherData'));
+      const situationData = [...props.situationList].map((data) => ({ ...data, weather: lat_long }));
       intervalID = setInterval(() => {
-        console.log(props.situationList);
-        socket.send(JSON.stringify(props.situationList) /*.filter((item) => item._id === context))*/);
+        socket.send(JSON.stringify(situationData) /*.filter((item) => item._id === context))*/);
       }, Number(sense) * 1000);
     });
     socket.onmessage = function (event) {
-      const { data } = event;
-      console.log(JSON.parse(data.replaceAll("'", '"')));
-      // JSON.parse(data.replaceAll("'", '"'));
-      // writeIntoConsole(data + step);
-      // socket.close();
+      const { data: consoleData } = event;
+
+      writeIntoConsole(consoleData + step);
+      const { data: parsedData } = JSON.parse(consoleData.replaceAll("'", '"'));
+      setGeneratedData((data) => {
+        let result;
+        if (step === 0) {
+          result = parsedData.filter((item) => item.TrafficScenarioApplication_Situations.situation_name === 'low_traffic');
+        }
+        if (step === 1) {
+          result = parsedData.filter((item) => item.TrafficScenarioApplication_Situations.situation_name === 'moderate_traffic');
+        }
+        if (step === 2) {
+          result = parsedData.filter((item) => item.TrafficScenarioApplication_Situations.situation_name === 'high_traffic');
+        }
+
+        return [...data, result];
+      });
+
       if (k === Number(records)) {
         clearInterval(intervalID);
 
         socket.close();
         setStep((step) => ++step);
-        // postMessage('Socket closed after 10 generated values');
         return;
       }
       k++;
     };
+    // return socket;
   };
 
   useEffect(() => {
@@ -155,6 +129,40 @@ export default function RunSituationSimulation(props) {
       // setStep(0);
     }
   }, [step, props.transitions]);
+
+  useEffect(() => {
+    if (step === 3) {
+      const csvString = [
+        ['Speed', 'Density', 'TripTime', 'Certainity', 'TimeStamp', 'Situation'],
+        ...generatedData.flat(1).map((item) => {
+          return [
+            item.situation_inference.attribute_vales.Speed,
+            item.situation_inference.attribute_vales.density,
+            item.situation_inference.attribute_vales.time,
+            item.situation_inference.certainity,
+            `${new Date(item.timestamp * 1000).getFullYear()}-${new Date(item.timestamp * 1000).getMonth() + 1}-${new Date(
+              item.timestamp * 1000
+            ).getDate()} ${new Date(item.timestamp * 1000).toLocaleTimeString('default')}`,
+            item.TrafficScenarioApplication_Situations.situation_name,
+          ];
+        }),
+      ]
+        .map((e) => e.join(','))
+        .join('\n');
+
+      // console.log(csvString);
+
+      /**Creating automatic download after data generation is completed */
+      let hiddenElement = document.createElement('a');
+      hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvString);
+      hiddenElement.target = '_blank';
+
+      hiddenElement.download = 'ExportedData.csv';
+      setTimeout(() => {
+        hiddenElement.click();
+      }, 1500);
+    }
+  }, [generatedData, step]);
 
   const generateElements = () => {
     const newSituaitonList = _.cloneDeep(props.situationList).map((situation, index) => {
@@ -170,7 +178,8 @@ export default function RunSituationSimulation(props) {
         style: { border: '2px solid #000', padding: 10 },
       };
     });
-
+    console.log('new Situation list', newSituaitonList);
+    console.log(props);
     if (props.transitions) {
       const transitionConnectors = props.transitions.map((transition, index) => {
         // return transition;
@@ -182,6 +191,7 @@ export default function RunSituationSimulation(props) {
         };
         newSituaitonList.push(connector);
       });
+      console.log('transitionConnectors', transitionConnectors);
       setConnectors(transitionConnectors);
     }
     setElements(newSituaitonList);
@@ -272,6 +282,7 @@ export default function RunSituationSimulation(props) {
         </div>
       </div>
       <div style={{ height: '80vh' }}>
+        {console.log(elements)}
         {elements && elements.length > 0 ? (
           <ReactFlow elements={elements} onNodeDoubleClick={(e, node) => handleNodeClick(e, node)} snapToGrid={true} snapGrid={snapGrid} />
         ) : (

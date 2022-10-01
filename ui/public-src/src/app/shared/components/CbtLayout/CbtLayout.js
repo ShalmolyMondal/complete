@@ -609,7 +609,7 @@ class CbtLayout extends React.Component {
                   <div className={classes.spaceBetween}>
                     <div className={classes.cardTitle}>Situation flow</div>
                     <Button variant="contained" color="primary" onClick={() => this.openConfigureSimulationModal()}>
-                      Configure simulation
+                      Configure Transition Parameters
                     </Button>
                   </div>
                   <RunSituationSimulation

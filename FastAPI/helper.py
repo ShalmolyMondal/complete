@@ -17,9 +17,9 @@ def cleanValues(data=[]):
 def determineSituation(fuzzyattr, rules, ca):
     def compare(x):
         if (
-            x[ca["ca1"]] == fuzzyattr["fuzzyness_ca1"]
-            and x[ca["ca2"]] == fuzzyattr["fuzzyness_ca2"]
-            and x[ca["ca3"]] == fuzzyattr["fuzzyness_ca3"]
+            x[ca["ca1"].strip()] == fuzzyattr["fuzzyness_ca1"]
+            and x[ca["ca2"].strip()] == fuzzyattr["fuzzyness_ca2"]
+            and x[ca["ca3"].strip()] == fuzzyattr["fuzzyness_ca3"]
         ):
             return True
 

@@ -130,9 +130,9 @@ class ConfigureSimulation extends React.Component {
           onClose={this.handleClose}
           aria-labelledby="max-width-dialog-title"
         >
-          <DialogTitle id="max-width-dialog-title">Configure simulation</DialogTitle>
+          <DialogTitle id="max-width-dialog-title">Configure Situation Transition Parameters</DialogTitle>
           <DialogContent>
-            <DialogContentText>Please create transition configurations for the simulation.</DialogContentText>
+            <DialogContentText>Please initiate the transition sequence.</DialogContentText>
             <form className={classes.form} noValidate>
               {this.state.transitions.map((transition, index) => {
                 return (

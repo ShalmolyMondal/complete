@@ -11,11 +11,7 @@ export default class SessionsScreenStore {
   @observable isFilterOptionsExpanded = false;
 
   @observable sessionsFilter = [];
-  @observable typeFilter = [
-    LogTypes.analytics,
-    LogTypes.error,
-    LogTypes.payload,
-  ];
+  @observable typeFilter = [LogTypes.analytics, LogTypes.error, LogTypes.payload];
 
   constructor(appStore) {
     this.appStore = appStore;
@@ -29,7 +25,6 @@ export default class SessionsScreenStore {
 
   @observable
   toggleConsole = () => {
-    console.log('here');
     if (this.consoleExpanded) {
       this.consoleSize = this.consoleCollapsedSize;
     } else {
@@ -68,16 +63,13 @@ export default class SessionsScreenStore {
         return this.typeFilter.indexOf(log.type) !== -1;
       });
     }
-    console.log(logs);
+    // console.log(logs);
     return logs;
   }
 
   @computed get logsFilterApplied() {
     //TODO Magic number detected!
-    if (
-      (this.sessionsFilter && this.sessionsFilter.length) ||
-      (this.typeFilter.length !== 0 && this.typeFilter.length !== 3)
-    ) {
+    if ((this.sessionsFilter && this.sessionsFilter.length) || (this.typeFilter.length !== 0 && this.typeFilter.length !== 3)) {
       return true;
     }
     return false;

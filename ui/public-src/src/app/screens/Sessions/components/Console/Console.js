@@ -255,7 +255,6 @@ class LogsList extends Component {
   }
 
   render() {
-    console.log(this.props.logs, 'logs here');
     return (
       <div style={logsContainerStyles}>
         {this.props.logs.map((log, idx) => {
@@ -263,13 +262,9 @@ class LogsList extends Component {
           return (
             <div key={key}>
               <div>
-                <span style={logTimestampStyles}>
-                  {this.formatTimestamp(log.timestamp)}
-                </span>
+                <span style={logTimestampStyles}>{this.formatTimestamp(log.timestamp)}</span>
                 <span style={logIdStyles}>{log.sessionName}</span>
-                <span style={getLogMessageStyle(log)}>
-                  {this.getLogMessage(log)}
-                </span>
+                <span style={getLogMessageStyle(log)}>{this.getLogMessage(log)}</span>
               </div>
             </div>
           );
@@ -333,9 +328,7 @@ export default class Console extends Component {
     let { typeFilter } = store;
     let idx = typeFilter.indexOf(id);
     if (idx !== -1) {
-      store.setTypeFilter(
-        typeFilter.slice(0, idx).concat(typeFilter.slice(idx + 1))
-      );
+      store.setTypeFilter(typeFilter.slice(0, idx).concat(typeFilter.slice(idx + 1)));
     } else {
       store.setTypeFilter(typeFilter.concat(id));
     }
@@ -343,41 +336,24 @@ export default class Console extends Component {
 
   render() {
     let { expanded } = this.props;
-    let { dimensionsStore, sessionsStore, sessionsScreenStore } =
-      this.props.store;
+    let { dimensionsStore, sessionsStore, sessionsScreenStore } = this.props.store;
 
     let { width, height } = dimensionsStore.dimensions;
-    let {
-      isFilterOptionsExpanded,
-      typeFilter,
-      sessionsFilter,
-      logsFilterApplied,
-    } = sessionsScreenStore;
+    let { isFilterOptionsExpanded, typeFilter, sessionsFilter, logsFilterApplied } = sessionsScreenStore;
 
     return (
       <StyledConsole>
         <ControlPanel>
           <Title>Sessions console</Title>
           <Controls>
-            <ControlButton
-              active={logsFilterApplied}
-              onClick={() =>
-                sessionsScreenStore.setFilterOptionsExpand(
-                  !isFilterOptionsExpanded
-                )
-              }
-            >
+            <ControlButton active={logsFilterApplied} onClick={() => sessionsScreenStore.setFilterOptionsExpand(!isFilterOptionsExpanded)}>
               <FilterIcon />
             </ControlButton>
             <ControlButton onClick={sessionsStore.clearLogs}>
               <ClearAllIcon />
             </ControlButton>
             <ControlButton onClick={sessionsScreenStore.toggleConsole}>
-              {sessionsScreenStore.consoleExpanded ? (
-                <KeyboardArrowDownIcon />
-              ) : (
-                <KeyboardArrowUpIcon />
-              )}
+              {sessionsScreenStore.consoleExpanded ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
             </ControlButton>
           </Controls>
         </ControlPanel>
@@ -396,11 +372,7 @@ export default class Console extends Component {
                 {sessionsStore.items.map((session) => {
                   return (
                     <MenuItem key={session.id} value={session.id}>
-                      <FilterOptionLabel
-                        selected={sessionsFilter.indexOf(session.id) !== -1}
-                      >
-                        {session.name}
-                      </FilterOptionLabel>
+                      <FilterOptionLabel selected={sessionsFilter.indexOf(session.id) !== -1}>{session.name}</FilterOptionLabel>
                     </MenuItem>
                   );
                 })}
@@ -414,9 +386,7 @@ export default class Console extends Component {
                     control={
                       <TypeFilterCheckbox
                         checked={typeFilter.indexOf(LogTypes.analytics) !== -1}
-                        onChange={() =>
-                          this.toggleTypeFilter(LogTypes.analytics)
-                        }
+                        onChange={() => this.toggleTypeFilter(LogTypes.analytics)}
                         value={LogTypes.analytics}
                       />
                     }

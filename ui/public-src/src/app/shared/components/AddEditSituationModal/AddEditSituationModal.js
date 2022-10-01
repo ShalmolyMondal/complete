@@ -263,6 +263,7 @@ class AddEditSituationModal extends React.Component {
       showMsg: undefined,
       situationConclusion: '',
       openFuzzySets: false,
+      lat_long: undefined,
     };
   }
 
@@ -508,6 +509,22 @@ class AddEditSituationModal extends React.Component {
 
   checkFuzzySetRange = () => {
     console.log(Object.values(this.state.fuzzy_selection).map((item) => item.fuzzyness));
+  };
+
+  getlatlong = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({ lat_long: { lat: position.coords.latitude, long: position.coords.longitude } });
+      localStorage.setItem('weatherData', JSON.stringify({ lat: position.coords.latitude, long: position.coords.longitude }));
+    });
+  };
+
+  handleWeather = (e) => {
+    if (e.target.checked) {
+      this.getlatlong();
+    } else {
+      this.setState({ lat_long: undefined });
+      localStorage.removeItem('weatherData');
+    }
   };
 
   render() {
@@ -1179,7 +1196,18 @@ class AddEditSituationModal extends React.Component {
                           )}
                         </ExpansionPanelDetails>
                       </ExpansionPanel>
+
                       <div className="fuzzy_btn_placement">
+                        <InputLabel htmlFor="weatherCheck">
+                          <Input type="checkbox" id="weatherCheck" onChange={this.handleWeather}></Input>
+                          Weather
+                          {this.state.lat_long && (
+                            <p>
+                              Latitude:{this.state.lat_long.lat} Longitude:{this.state.lat_long.long}
+                            </p>
+                          )}
+                        </InputLabel>
+
                         <Button variant="contained" onClick={this.canGoToSummary} color="primary">
                           Save
                         </Button>
