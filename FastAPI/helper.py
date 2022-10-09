@@ -3,6 +3,26 @@ import numpy as np
 import skfuzzy as skf
 
 
+weatherConditions = {
+    "Thunderstorm": "low_traffic",
+    "Drizzle": "moderate_trafiic",
+    "Rain": "high_traffic",
+    "Snow": "moderate_trafiic",
+    "Clear": "high_traffic",
+    "Clouds": "moderate_trafiic",
+    "Mist": "low_traffic",
+    "Smoke": "low_traffic",
+    "Haze": "low_traffic",
+    "Dust": "low_traffic",
+    "Fog": "low_traffic",
+    "Sand": "low_traffic",
+    "Dust": "low_traffic",
+    "Ash": "low_traffic",
+    "Squall": "low_traffic",
+    "Tornado": "low_traffic",
+}
+
+
 def filter(obj):
     if "context_attributes" in obj:
         del obj["context_attributes"]
@@ -26,7 +46,13 @@ def determineSituation(fuzzyattr, rules, ca):
     return pydash.filter_(rules, compare)
 
 
-def getSituationInference(name, data=[], rules={}):
+def weatherInference(condition):
+    for i in weatherConditions.keys():
+        if i == condition:
+            return weatherConditions[i]
+
+
+def getSituationInference(name, weather, data=[], rules={}):
     [ca1, ca2, ca3] = list(dict.keys(data))
 
     fuzzyness_ca1 = data[ca1]["fuzzyness"].strip()
@@ -43,7 +69,34 @@ def getSituationInference(name, data=[], rules={}):
         {"ca1": ca1, "ca2": ca2, "ca3": ca3},
     )
 
-    return {name: detSit[0]["situation"]}
+    __weather = weatherInference(weather["weather_condition"])
+
+    inferredValue = ""
+
+    if __weather == "low_traffic" and detSit[0]["situation"] == "low_traffic":
+        inferredValue = "low_traffic"
+    elif __weather == "low_traffic" and detSit[0]["situation"] == "moderate_traffic":
+        inferredValue = "low_traffic ~ moderate_traffic"
+    elif __weather == "low_traffic" and detSit[0]["situation"] == "high_traffic":
+        inferredValue = "moderate_traffic"
+    elif __weather == "moderate_traffic" and detSit[0]["situation"] == "low_traffic":
+        inferredValue = "low_traffic ~ moderate_traffic"
+    elif (
+        __weather == "moderate_traffic" and detSit[0]["situation"] == "moderate_traffic"
+    ):
+        inferredValue = "moderate_traffic"
+    elif __weather == "moderate_traffic" and detSit[0]["situation"] == "high-traffic":
+        inferredValue = "moderate_traffic ~ high-traffic"
+    elif __weather == "high-traffic" and detSit[0]["situation"] == "low_traffic":
+        inferredValue = "moderate_traffic"
+    elif __weather == "high-traffic" and detSit[0]["situation"] == "moderate_traffic":
+        inferredValue = "moderate_traffic ~ high-traffic"
+    elif __weather == "high-traffic" and detSit[0]["situation"] == "high-traffic":
+        inferredValue = "high-traffic"
+    else:
+        inferredValue = detSit[0]["situation"]
+
+    return {name: inferredValue}
 
 
 def get_clean_fuzzy_values(fuzzy_val):

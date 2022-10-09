@@ -264,6 +264,8 @@ class AddEditSituationModal extends React.Component {
       situationConclusion: '',
       openFuzzySets: false,
       lat_long: undefined,
+      latitude: '',
+      longitude: '',
     };
   }
 
@@ -392,6 +394,7 @@ class AddEditSituationModal extends React.Component {
       context_attributes: this.state.context_attributes,
       fuzzy_selection: this.state.fuzzy_selection,
       fuzzy_rules: this.state.fuzzy_rules,
+      weather: this.state.lat_long && { lat: this.state.latitude, long: this.state.longitude },
     };
     if (this.props.mode == 'EDIT_MODE') {
       this.props.viewStore.updateSituation(this.props.situationId, { situationData: situationPayload }, this.handleClose);
@@ -1201,13 +1204,32 @@ class AddEditSituationModal extends React.Component {
                         <InputLabel htmlFor="weatherCheck">
                           <Input type="checkbox" id="weatherCheck" onChange={this.handleWeather}></Input>
                           Weather
-                          {this.state.lat_long && (
+                          {/* {this.state.lat_long && (
                             <p>
                               Latitude:{this.state.lat_long.lat} Longitude:{this.state.lat_long.long}
                             </p>
-                          )}
+                          )} */}
                         </InputLabel>
-
+                        <div>
+                          <InputLabel htmlFor="lat">
+                            Latitude
+                            <Input
+                              disabled={!this.state.lat_long}
+                              type="number"
+                              id="lat"
+                              onChange={(e) => this.setState({ latitude: e.target.value })}
+                            ></Input>
+                          </InputLabel>
+                          <InputLabel htmlFor="long">
+                            Longitude
+                            <Input
+                              type="number"
+                              disabled={!this.state.lat_long}
+                              id="long"
+                              onChange={(e) => this.setState({ longitude: e.target.value })}
+                            ></Input>
+                          </InputLabel>
+                        </div>
                         <Button variant="contained" onClick={this.canGoToSummary} color="primary">
                           Save
                         </Button>

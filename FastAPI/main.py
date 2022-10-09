@@ -2,8 +2,8 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 import json
-import requests
 import time
+import requests
 import skfuzzy as skf
 from helper import cleanValues, getSituationInference, getCertainity
 
@@ -19,12 +19,16 @@ app.add_middleware(
 )
 
 
-def get_weather():
+def get_weather(weather):
     response = requests.get(
-        "http://api.openweathermap.org/data/2.5/weather?lat=22.5028&lon=-88.3295&limit=5&appid=697029433b61df35c0e34a60d34cccba",
+        "http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&limit=5&appid=697029433b61df35c0e34a60d34cccba".format(
+            weather["lat"], weather["long"]
+        ),
     ).json()
 
-    return response
+    return {
+        "weather_condition": response["weather"][0]["main"],
+    }
 
 
 @app.websocket("/websocket")
@@ -33,13 +37,15 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         cleanData = cleanValues(json.loads(await websocket.receive_text()))
         # print("here", websocket.client.host)
-        print(get_weather())
+        print(json.dumps(get_weather(cleanData[0]["weather"]), indent=3))
+        # print(get_weather(l))
         lst = []
         for i in cleanData:
             lst.append(
                 {
                     "TrafficScenarioApplication_Situations": getSituationInference(
                         "situation_name",
+                        get_weather(cleanData[0]["weather"]),
                         i["fuzzy_selection"],
                         i["fuzzy_rules"],
                     ),
