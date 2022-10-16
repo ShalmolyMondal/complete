@@ -1,3 +1,3 @@
-echo "pushing to github"
+echo "Pushing to REMOTE"
 
 git add . && git commit && git push origin master
