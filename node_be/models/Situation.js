@@ -26,7 +26,7 @@ const SituationSchema = mongoose.Schema({
     type: Array,
     required: false,
   },
-  weather: { required: false },
+  weather: { type: Object, required: false },
   // context_attributes: [ContextAttributesSchema],
 });
 

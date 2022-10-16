@@ -82,8 +82,10 @@ export default function RunSituationSimulation(props) {
     let intervalID;
     // Connection opened
     socket.addEventListener('open', function (event) {
-      const lat_long = JSON.parse(localStorage.getItem('weatherData'));
-      const situationData = [...props.situationList].map((data) => ({ ...data, weather: lat_long }));
+      // const lat_long = JSON.parse(localStorage.getItem('weatherData'));
+
+      const situationData = [...props.situationList].map((data) => ({ ...data }));
+      console.log(situationData);
       intervalID = setInterval(() => {
         socket.send(JSON.stringify(situationData) /*.filter((item) => item._id === context))*/);
       }, Number(sense) * 1000);

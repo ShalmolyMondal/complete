@@ -514,19 +514,20 @@ class AddEditSituationModal extends React.Component {
     console.log(Object.values(this.state.fuzzy_selection).map((item) => item.fuzzyness));
   };
 
-  getlatlong = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.setState({ lat_long: { lat: position.coords.latitude, long: position.coords.longitude } });
-      localStorage.setItem('weatherData', JSON.stringify({ lat: position.coords.latitude, long: position.coords.longitude }));
-    });
-  };
+  // getlatlong = () => {
+  //   navigator.geolocation.getCurrentPosition((position) => {
+  //     this.setState({ lat_long: true/*{ lat: position.coords.latitude, long: position.coords.longitude }*/ });
+  //     // localStorage.setItem('weatherData', JSON.stringify({ lat: position.coords.latitude, long: position.coords.longitude }));
+  //   });
+  // };
 
   handleWeather = (e) => {
     if (e.target.checked) {
-      this.getlatlong();
+      // this.getlatlong();
+      this.setState({ lat_long: true });
     } else {
       this.setState({ lat_long: undefined });
-      localStorage.removeItem('weatherData');
+      // localStorage.removeItem('weatherData');
     }
   };
 
