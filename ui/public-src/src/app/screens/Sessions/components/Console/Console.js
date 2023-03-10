@@ -38,7 +38,7 @@ const StyledConsole = glamorous.div({
   fontSize: '16px',
   overflow: 'auto',
   width: '100%',
-  maxHeight: '100%',
+  maxHeight: '20rem',
   height: 'auto',
   color: 'white',
 

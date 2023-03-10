@@ -92,8 +92,8 @@ export default function RunSituationSimulation(props) {
     });
     socket.onmessage = function (event) {
       const { data: consoleData } = event;
-
-      writeIntoConsole(consoleData + step);
+      const situationName = step === 0 ? 'low_traffic' : step === 1 ? 'moderate_traffic' : 'high_traffic';
+      writeIntoConsole(consoleData, '', situationName);
       const { data: parsedData } = JSON.parse(consoleData.replaceAll("'", '"'));
       setGeneratedData((data) => {
         let result;
@@ -134,6 +134,7 @@ export default function RunSituationSimulation(props) {
 
   useEffect(() => {
     if (step === 3) {
+      console.log(generatedData);
       const csvString = [
         ['Speed', 'Density', 'TripTime', 'Certainity', 'TimeStamp', 'Situation'],
         ...generatedData.flat(1).map((item) => {
@@ -168,6 +169,7 @@ export default function RunSituationSimulation(props) {
 
   const generateElements = () => {
     const newSituaitonList = _.cloneDeep(props.situationList).map((situation, index) => {
+      console.log(index);
       return {
         id: index + '',
         data: {
@@ -177,21 +179,30 @@ export default function RunSituationSimulation(props) {
         },
         position: { x: 300, y: (index + 1) * 100 },
         situationId: situation._id,
-        style: { border: '2px solid #000', padding: 10 },
+        style: { border: '2px solid #000', padding: 10, color: '#1A192B' },
       };
     });
-    console.log('new Situation list', newSituaitonList);
-    console.log(props);
+    console.log('from generateElements', props);
+
     if (props.transitions) {
       const transitionConnectors = props.transitions.map((transition, index) => {
         // return transition;
+        const { from, intermediate, to } = transition;
+
+        console.log(from, intermediate, to);
+
+        const source = newSituaitonList.find((s) => s.situationId == from);
+        const intermediateTarget = newSituaitonList.find((s) => s.situationId == intermediate);
+        const target = newSituaitonList.find((s) => s.situationId == to);
+
         const connector = {
           id: transition.from + '_' + transition.to,
-          source: newSituaitonList.find((s) => s.situationId == transition.from).id,
-          target: newSituaitonList.find((s) => s.situationId == transition.to).id,
+          source: source && source.id,
+          target: target && target.id,
           arrowHeadType: 'arrowclosed',
         };
         newSituaitonList.push(connector);
+        return connector;
       });
       console.log('transitionConnectors', transitionConnectors);
       setConnectors(transitionConnectors);

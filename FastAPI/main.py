@@ -29,6 +29,8 @@ def get_weather(object):
             ),
         ).json()
 
+        print(response)
+
     return {
         "weather_condition": response["weather"][0]["main"],
     }
