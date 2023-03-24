@@ -83,6 +83,7 @@ export default function RunSituationSimulation(props) {
     // Connection opened
     socket.addEventListener('open', function (event) {
       const lat_long = JSON.parse(localStorage.getItem('weatherData'));
+      console.log(props.situationList)
       const situationData = [...props.situationList].map((data) => ({ ...data, weather: lat_long }));
       intervalID = setInterval(() => {
         socket.send(JSON.stringify(situationData) /*.filter((item) => item._id === context))*/);
@@ -185,8 +186,8 @@ export default function RunSituationSimulation(props) {
         // return transition;
         const connector = {
           id: transition.from + '_' + transition.to,
-          source: newSituaitonList.find((s) => s.situationId == transition.from).id,
-          target: newSituaitonList.find((s) => s.situationId == transition.to).id,
+          source: newSituaitonList.find((s) => s.situationId == transition.from).id || '',
+          target: newSituaitonList.find((s) => s.situationId == transition.to).id || '',
           arrowHeadType: 'arrowclosed',
         };
         newSituaitonList.push(connector);

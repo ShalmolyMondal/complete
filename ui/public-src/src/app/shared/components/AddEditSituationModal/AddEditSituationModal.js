@@ -987,7 +987,7 @@ class AddEditSituationModal extends React.Component {
                                           </InputLabel> */}
                                         <TextField
                                           id="fuzzyness"
-                                          label="Fuzzyness"
+                                          label="Fuzzy Subset"
                                           value={
                                             this.state.fuzzy_selection[context.context_attribute_name]
                                               ? this.state.fuzzy_selection[context.context_attribute_name].fuzzyness
@@ -1096,7 +1096,7 @@ class AddEditSituationModal extends React.Component {
                                       <FormControl className={classes.formControl + ' ' + classes.selectEmpty}>
                                         <TextField
                                           id="fuzzyness"
-                                          label="Fuzzyness"
+                                          label="Fuzzy Subset"
                                           disabled="true"
                                           value={
                                             this.state.fuzzy_selection[context.context_attribute_name]
@@ -1123,7 +1123,7 @@ class AddEditSituationModal extends React.Component {
                                       <FormControl className={classes.formControl + ' ' + classes.selectEmpty}>
                                         <TextField
                                           id="stepfn"
-                                          label="Step Function"
+                                          label="Fuzzyness"
                                           type="number"
                                           value={
                                             this.state.fuzzy_selection[context.context_attribute_name]
